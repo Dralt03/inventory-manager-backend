@@ -8,7 +8,7 @@ const app = express();
 
 app.use(cors());
 
-app.get("/api/home", (req, res) => {
+app.get("/", (req, res) => {
   res.json(shops);
 });
 
