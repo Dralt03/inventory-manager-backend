@@ -81,17 +81,6 @@ app.get("/api/users/:userId/shops", async (req, res) => {
   }
 });
 
-//IMPORTANT
-
-// app.get("/api/users/:userId/shops", findUserById, async (req, res) => {
-//   try {
-//     const shops = await Shop.find();
-//     res.status(200).send(shops);
-//   } catch (err) {
-//     res.status(500).send({ message: "Error fetching from MOngoDB" });
-//   }
-// });
-
 app.post(
   "/api/users/:userId/shops/:id/items",
   findUserById,
@@ -147,7 +136,8 @@ app.delete("/api/user/:userId/shops/:id", findUserById, async (req, res) => {
   }
 });
 
-app.post("/api/user/:userId/shops", findUserById, async (req, res) => {
+app.post("/api/user/:userId/shops", async (req, res) => {
+  const { userId } = req.params;
   const { title } = req.body;
   const newShop = {
     id: Math.random().toString(),
@@ -155,9 +145,20 @@ app.post("/api/user/:userId/shops", findUserById, async (req, res) => {
     items: [],
   };
 
-  req.users?.shops.push(newShop);
   try {
-    await req.users.save();
+    const database = client.db("users");
+    const collection = database.collection("user");
+    const users = await collection.find().toArray();
+    const current_user = users.filter((user) => user.clerkId === userId);
+    if (!current_user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    current_user[0].shops.push(newShop);
+    await collection.updateOne(
+      { clerkId: userId },
+      { $set: { shops: current_user[0].shops } }
+    );
     res.status(201).send(newShop);
   } catch (err) {
     res.status(500).send({ message: "Error adding Shop" });
