@@ -1,12 +1,8 @@
 import mongoose from "mongoose";
+import ShopSchema from "./shops.model.js";
 
 const userSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  username: {
+  clerkId: {
     type: String,
     required: true,
     unique: true,
@@ -16,10 +12,16 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  password: {
+  username: {
     type: String,
-    required: true,
   },
+  firstName: {
+    type: String,
+  },
+  lastName: {
+    type: String || null,
+  },
+  shops: [ShopSchema],
 });
 
 export const User = mongoose.model("User", userSchema);
