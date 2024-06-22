@@ -74,7 +74,7 @@ app.get("/api/users/:userId/shops", async (req, res) => {
 
     const current_user = users.filter((user) => user.clerkId === userId);
     console.log(current_user[0].shops);
-    res.status(200).send(current_user[0].shops);
+    res.json(current_user[0].shops);
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: "Error fetching users" });
